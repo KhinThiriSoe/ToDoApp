@@ -2,21 +2,17 @@ package com.khin.todoapplication.fragments.list
 
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.khin.todoapplication.R
 import com.khin.todoapplication.data.viewmodel.ToDoViewModel
+import com.khin.todoapplication.databinding.FragmentListBinding
 import com.khin.todoapplication.fragments.SharedViewModel
-import org.w3c.dom.Text
+import com.khin.todoapplication.fragments.list.adapter.ListAdapter
 
 class ListFragment : Fragment() {
 
@@ -25,58 +21,39 @@ class ListFragment : Fragment() {
 
     private val adapter: ListAdapter by lazy { ListAdapter() }
 
-    private lateinit var floatingActionButton: FloatingActionButton
-    private lateinit var listLayout: ConstraintLayout
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var noDataImageView: ImageView
-    private lateinit var noDataTextView: TextView
+    private var _binding: FragmentListBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+    ): View {
 
-        floatingActionButton = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
-        floatingActionButton.setOnClickListener {
-            findNavController().navigate(R.id.action_listFragment_to_addFragment)
-        }
+        // Data binding
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.mSharedViewModel = sharedViewModel
 
-        listLayout = view.findViewById(R.id.listLayout)
-        listLayout.setOnClickListener {
+        // Set Up RecyclerView
+        setUpRecyclerView()
+
+        binding.listLayout.setOnClickListener {
             findNavController().navigate(R.id.action_listFragment_to_updateFragment)
         }
-
-        recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
-
-        noDataImageView = view.findViewById(R.id.no_data_imageView)
-        noDataTextView = view.findViewById(R.id.no_data_textView)
-
+        // Observe LiveData
         mToDoViewModel.getAllData.observe(viewLifecycleOwner, { data ->
             sharedViewModel.checkIfDatabaseEmpty(data)
             adapter.setData(data)
         })
 
-        sharedViewModel.emptyDatabase.observe(viewLifecycleOwner, {
-            showEmptyDatabaseViews(it)
-        })
-
         setHasOptionsMenu(true)
 
-        return view
+        return binding.root
     }
 
-    private fun showEmptyDatabaseViews(emptyDatabase: Boolean) {
-        if (emptyDatabase) {
-            noDataTextView.visibility = View.VISIBLE
-            noDataImageView.visibility = View.VISIBLE
-        } else {
-            noDataImageView.visibility = View.INVISIBLE
-            noDataTextView.visibility = View.INVISIBLE
-        }
+    private fun setUpRecyclerView() {
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -104,5 +81,10 @@ class ListFragment : Fragment() {
             .setTitle("Delete Everything?")
             .setMessage("Are you sure you want to remove everything?")
         builder.create().show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

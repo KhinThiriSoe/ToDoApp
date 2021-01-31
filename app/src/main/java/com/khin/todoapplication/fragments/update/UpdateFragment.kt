@@ -13,6 +13,7 @@ import androidx.navigation.fragment.navArgs
 import com.khin.todoapplication.R
 import com.khin.todoapplication.data.models.ToDoData
 import com.khin.todoapplication.data.viewmodel.ToDoViewModel
+import com.khin.todoapplication.databinding.FragmentUpdateBinding
 import com.khin.todoapplication.fragments.SharedViewModel
 
 class UpdateFragment : Fragment() {
@@ -22,30 +23,25 @@ class UpdateFragment : Fragment() {
     private val todoViewModel: ToDoViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by viewModels()
 
-    private lateinit var title: EditText
-    private lateinit var description: EditText
-    private lateinit var spinner: Spinner
+    private var _binding: FragmentUpdateBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_update, container, false)
+        _binding = FragmentUpdateBinding.inflate(inflater, container, false)
+        binding.args = args
 
         setHasOptionsMenu(true)
 
-        title = view.findViewById(R.id.current_title_et)
-        description = view.findViewById(R.id.current_description_et)
-        spinner = view.findViewById(R.id.current_priorities_spinner)
+        binding.lifecycleOwner = this
 
-        title.setText(args.currentItem.title)
-        description.setText(args.currentItem.description)
-        spinner.setSelection(sharedViewModel.parsePriorityToInt(args.currentItem.priority))
+        // Spinner Item Selected Listener
+        binding.currentPrioritiesSpinner.onItemSelectedListener = sharedViewModel.listener
 
-        spinner.onItemSelectedListener = sharedViewModel.listener
-
-        return view
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -65,9 +61,9 @@ class UpdateFragment : Fragment() {
     }
 
     private fun updateItem() {
-        val title = title.text.toString()
-        val description = description.text.toString()
-        val getPriority = spinner.selectedItem.toString()
+        val title = binding.currentTitleEt.text.toString()
+        val description = binding.currentDescriptionEt.text.toString()
+        val getPriority = binding.currentPrioritiesSpinner.selectedItem.toString()
 
         val validation = sharedViewModel.verifyDataFromUser(title, description)
         if (validation) {
@@ -101,5 +97,10 @@ class UpdateFragment : Fragment() {
             .setTitle("Delete '${args.currentItem.title}'?")
             .setMessage("Are you sure you want to remove '${args.currentItem.title}?")
         builder.create().show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

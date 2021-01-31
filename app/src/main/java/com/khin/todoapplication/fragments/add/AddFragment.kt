@@ -12,6 +12,7 @@ import com.khin.todoapplication.R
 import com.khin.todoapplication.data.viewmodel.ToDoViewModel
 import com.khin.todoapplication.data.models.Priority
 import com.khin.todoapplication.data.models.ToDoData
+import com.khin.todoapplication.databinding.FragmentAddBinding
 import com.khin.todoapplication.fragments.SharedViewModel
 
 class AddFragment : Fragment() {
@@ -19,25 +20,18 @@ class AddFragment : Fragment() {
     private val mToDoViewModel: ToDoViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by viewModels()
 
-    private lateinit var titleText: EditText
-    private lateinit var prioritiesSpinner: Spinner
-    private lateinit var descriptionText: EditText
+    private var _binding: FragmentAddBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add, container, false)
-    }
+        _binding = FragmentAddBinding.inflate(inflater, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        titleText = view.findViewById(R.id.title_et)
-        prioritiesSpinner = view.findViewById(R.id.priorities_spinner)
-        descriptionText = view.findViewById(R.id.description_et)
-
-        prioritiesSpinner.onItemSelectedListener = sharedViewModel.listener
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -52,9 +46,9 @@ class AddFragment : Fragment() {
     }
 
     private fun insertDataToDo() {
-        val mTitle = titleText.text.toString()
-        val mPriority = prioritiesSpinner.selectedItem.toString()
-        val mDescription = descriptionText.text.toString()
+        val mTitle = binding.titleEt.text.toString()
+        val mPriority = binding.prioritiesSpinner.selectedItem.toString()
+        val mDescription = binding.descriptionEt.text.toString()
 
         val validation = sharedViewModel.verifyDataFromUser(mTitle, mDescription)
         if (validation) {
