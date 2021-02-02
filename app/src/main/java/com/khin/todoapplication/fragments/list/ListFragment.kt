@@ -18,6 +18,7 @@ import com.khin.todoapplication.databinding.FragmentListBinding
 import com.khin.todoapplication.fragments.SharedViewModel
 import com.khin.todoapplication.fragments.list.adapter.ListAdapter
 import com.khin.todoapplication.fragments.list.adapter.SwipeToDelete
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class ListFragment : Fragment() {
 
@@ -59,6 +60,10 @@ class ListFragment : Fragment() {
     private fun setUpRecyclerView() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+
+        binding.recyclerView.itemAnimator = SlideInUpAnimator().apply {
+            addDuration = 300
+        }
 
         // Swipe To Delete
         swipeToDelete(binding.recyclerView)
