@@ -8,9 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 import com.khin.todoapplication.R
 import com.khin.todoapplication.data.models.ToDoData
@@ -60,7 +58,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun setUpRecyclerView() {
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         binding.recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 300
