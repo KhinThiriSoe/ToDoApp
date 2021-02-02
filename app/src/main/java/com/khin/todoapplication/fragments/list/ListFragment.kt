@@ -17,6 +17,7 @@ import com.khin.todoapplication.databinding.FragmentListBinding
 import com.khin.todoapplication.fragments.SharedViewModel
 import com.khin.todoapplication.fragments.list.adapter.ListAdapter
 import com.khin.todoapplication.fragments.list.adapter.SwipeToDelete
+import com.khin.todoapplication.fragments.utils.hideKeyboard
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -52,6 +53,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         })
 
         setHasOptionsMenu(true)
+
+        hideKeyboard(requireActivity())
 
         return binding.root
     }
